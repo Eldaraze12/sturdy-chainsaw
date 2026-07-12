@@ -94,11 +94,9 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STORAGES = {
-  
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
-    # 2. Resim ve dosya yüklemeleri için eksik olan varsayılan ayar (EKLENECEK)
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
