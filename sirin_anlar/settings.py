@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +33,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -60,25 +60,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "sirin_anlar.wsgi.application"
 
-import dj_database_url
-
-DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
-
-if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=os.environ.get("DATABASE_SSL_REQUIRE", "1") == "1",
-        )
-    }
+# Vercel mühiti üçün SQLite faylının idarə edilməsi və məcburi köçürülməsi
+if os.environ.get("VERCEL"):
+    db_path = "/tmp/db.sqlite3"
+    source_db = BASE_DIR / "db.sqlite3"
+    
+    # Əgər əsas qovluqda db.sqlite3 faylı varsa və /tmp qovluğuna hələ köçürülməyibsə
+    if os.path.exists(source_db) and not os.path.exists(db_path):
+        try:
+            shutil.copyfile(source_db, db_path)
+        except Exception:
+            pass
 else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
+    db_path = BASE_DIR / "db.sqlite3"
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": db_path,
     }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -94,14 +95,6 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-    },
-}
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
