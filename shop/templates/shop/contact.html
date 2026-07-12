@@ -1,0 +1,164 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Əlaqə — Şirin Anlar{% endblock %}
+
+{% block content %}
+<section class="py-10 md:py-14">
+    <div class="container-brand">
+        <div class="text-center max-w-[640px] mx-auto mb-11 animate-fade-in-up">
+            <span class="eyebrow">Əlaqə</span>
+            <h2 class="text-[clamp(1.9rem,4vw,2.75rem)] my-2">Bizimlə əlaqə saxlayın</h2>
+            <p class="text-muted">Sifariş və suallarınız üçün formu doldurun və ya aşağıdakı məlumatlarla əlaqə saxlayın.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="animate-fade-in-up [animation-delay:100ms]">
+                <h3 class="text-xl mb-3">Məqsədiniz nədir?</h3>
+                <p class="mb-4 text-ink/90">Fərdi tort, hədiyyə qutusu və ya xüsusi şirniyyat sifariş etmək istəyirsinizsə, aşağıdakı chat pəncərəsindən yazın. Biz mesajınızı alıb tezliklə cavab verəcəyik.</p>
+                <p class="mb-6 text-ink/90">Əlavə suallar üçün +994 00 000 00 00 nömrəsinə zəng edə və ya salam@sirinanlar.az ünvanına yazmaq olar.</p>
+                <div class="card p-6 hover:shadow-brand-lg transition-shadow duration-300">
+                    <h4 class="text-lg mb-3">Əlaqə məlumatları</h4>
+                    <ul class="space-y-2.5">
+                        <li><strong class="text-brand-dark">Ünvan</strong> <span class="text-ink/80">— Bakı, Azərbaycan</span></li>
+                        <li><strong class="text-brand-dark">Telefon</strong> <a href="tel:+994000000000" class="text-ink/80 hover:text-brand-dark">+994 00 000 00 00</a></li>
+                        <li><strong class="text-brand-dark">İş saatları</strong> <span class="text-ink/80">— Hər gün 09:00 — 21:00</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="animate-fade-in-up [animation-delay:220ms]">
+                <div class="card overflow-hidden flex flex-col h-[560px]">
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-border bg-brand-soft/40">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-accent">Onlayn chat</p>
+                            <h3 class="text-lg">Bizə yazın</h3>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#4a7a3a]">
+                            <span class="w-2 h-2 rounded-full bg-[#4a7a3a] animate-pulse"></span> Onlayn
+                        </span>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto px-6 py-5 space-y-4" id="chat-window" aria-live="polite">
+                        {% for item in conversation %}
+                        <div class="flex gap-3 {% if item.role == 'user' %}flex-row-reverse{% endif %} animate-fade-in-up">
+                            <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-xs font-bold
+                                        {% if item.role == 'user' %}bg-brand text-white{% else %}bg-brand-soft text-brand-dark{% endif %}">
+                                {% if item.role == 'user' %}Siz{% else %}S{% endif %}
+                            </div>
+                            <div class="{% if item.role == 'user' %}chat-bubble-user{% else %}chat-bubble-agent{% endif %}">
+                                <p>{{ item.text }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div class="hidden gap-1.5 pl-11" id="typing-indicator">
+                            <span class="typing-dot"></span><span class="typing-dot [animation-delay:.15s]"></span><span class="typing-dot [animation-delay:.3s]"></span>
+                        </div>
+                    </div>
+
+                    <form id="chat-form" action="" method="post" class="border-t border-border p-5 space-y-3">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        {{ form.subject }}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label for="id_name" class="block text-xs font-bold text-muted mb-1.5">Adınız</label>
+                                {{ form.name }}
+                                {{ form.name.errors }}
+                            </div>
+                            <div>
+                                <label for="id_phone" class="block text-xs font-bold text-muted mb-1.5">Telefon</label>
+                                {{ form.phone }}
+                                {{ form.phone.errors }}
+                            </div>
+                        </div>
+                        <div>
+                            <label for="id_message" class="block text-xs font-bold text-muted mb-1.5">Mesaj</label>
+                            {{ form.message }}
+                            {{ form.message.errors }}
+                        </div>
+                        <button type="submit" class="btn-primary w-full focus-ring">Göndər</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chatForm = document.getElementById('chat-form');
+    const chatWindow = document.getElementById('chat-window');
+    const typingIndicator = document.getElementById('typing-indicator');
+    const messageInput = document.getElementById('id_message');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    function messageRowHtml(item) {
+        const isUser = item.role === 'user';
+        return `
+            <div class="flex gap-3 ${isUser ? 'flex-row-reverse' : ''} animate-fade-in-up">
+                <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-xs font-bold ${isUser ? 'bg-brand text-white' : 'bg-brand-soft text-brand-dark'}">${isUser ? 'Siz' : 'S'}</div>
+                <div class="${isUser ? 'chat-bubble-user' : 'chat-bubble-agent'}"><p>${item.text}</p></div>
+            </div>
+        `;
+    }
+
+    function renderConversation(conversation) {
+        const messages = conversation.map(messageRowHtml).join('');
+        chatWindow.innerHTML = messages + '<div class="hidden gap-1.5 pl-11" id="typing-indicator"><span class="typing-dot"></span><span class="typing-dot [animation-delay:.15s]"></span><span class="typing-dot [animation-delay:.3s]"></span></div>';
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function firstErrorMessage(errors) {
+        for (const field in errors) {
+            if (errors[field] && errors[field].length) {
+                return errors[field][0].message;
+            }
+        }
+        return 'Mesajınızı göndərmək mümkün olmadı. Zəhmət olmasa məlumatları yoxlayıb yenidən cəhd edin.';
+    }
+
+    function showErrorBubble(text) {
+        chatWindow.insertAdjacentHTML('beforeend', messageRowHtml({ role: 'agent', text }));
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    if (chatForm) {
+        chatForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            const formData = new FormData(chatForm);
+            chatWindow.insertAdjacentHTML('beforeend', messageRowHtml({ role: 'user', text }));
+            messageInput.value = '';
+            typingIndicator.classList.remove('hidden');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            fetch(window.location.href, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: formData,
+            })
+            .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+            .then(({ ok, data }) => {
+                typingIndicator.classList.add('hidden');
+                if (ok && data.success) {
+                    setTimeout(() => {
+                        renderConversation(data.conversation);
+                    }, 700);
+                } else {
+                    showErrorBubble(firstErrorMessage(data.errors || {}));
+                }
+            })
+            .catch(() => {
+                typingIndicator.classList.add('hidden');
+                showErrorBubble('Şəbəkə xətası baş verdi. Zəhmət olmasa internet bağlantınızı yoxlayıb yenidən cəhd edin.');
+            });
+        });
+    }
+</script>
+{% endblock %}

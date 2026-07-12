@@ -1,0 +1,24 @@
+<a href="{{ product.get_absolute_url }}" class="product-card group focus-ring">
+    {% if product.image %}
+    <div class="aspect-[4/3] overflow-hidden bg-brand-soft">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110">
+    </div>
+    {% else %}
+    <div class="aspect-[4/3] flex items-center justify-center bg-brand-soft text-brand" aria-hidden="true">
+        <svg class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16"/><path d="M5 21v-6a7 7 0 0 1 14 0v6"/><path d="M5 15c2 0 2 1.2 3.5 1.2S10 15 12 15s2 1.2 3.5 1.2S17 15 19 15"/><path d="M12 8V5"/><path d="M9 5h6"/></svg>
+    </div>
+    {% endif %}
+    <div class="p-5 flex flex-col flex-1">
+        <span class="text-accent text-xs font-bold uppercase tracking-wide mb-1">{{ product.category.name }}</span>
+        <h3 class="text-lg mb-1.5 transition-colors group-hover:text-brand">{{ product.name }}</h3>
+        {% if product.description %}<p class="text-muted text-sm mb-4 flex-1">{{ product.description|truncatewords:14 }}</p>{% endif %}
+        <div class="flex items-center justify-between mt-auto pt-3 border-t border-border">
+            <span class="text-brand-dark font-bold text-lg">{{ product.price }} ₼</span>
+            {% if product.in_stock %}
+            <span class="badge-in">Stokda</span>
+            {% else %}
+            <span class="badge-out">Bitib</span>
+            {% endif %}
+        </div>
+    </div>
+</a>

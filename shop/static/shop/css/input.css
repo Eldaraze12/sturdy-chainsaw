@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth bg-bg;
+  }
+  body {
+    @apply bg-bg text-ink font-body leading-relaxed;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display text-brand-dark font-bold leading-tight;
+  }
+  a {
+    @apply text-inherit no-underline;
+  }
+  img {
+    @apply max-w-full block;
+  }
+  [x-cloak] {
+    display: none !important;
+  }
+}
+
+@layer components {
+  .container-brand {
+    @apply w-full max-w-[1140px] mx-auto px-5;
+  }
+
+  .btn {
+    @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-6 py-3
+           font-bold font-body cursor-pointer border-2 border-transparent
+           transition-all duration-200 ease-out;
+  }
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: translateX(-130%);
+    transition: transform .6s ease;
+  }
+  .btn:hover::after {
+    transform: translateX(130%);
+  }
+  .btn-primary {
+    @apply btn bg-brand text-surface shadow-brand hover:bg-brand-dark hover:-translate-y-0.5 hover:shadow-brand-lg active:translate-y-0;
+  }
+  .btn-outline {
+    @apply btn bg-transparent text-brand-dark border-brand hover:bg-brand hover:text-surface hover:-translate-y-0.5;
+  }
+  .btn-outline-light {
+    @apply btn bg-transparent text-white border-white/90 hover:bg-white/10 hover:-translate-y-0.5;
+  }
+
+  .card {
+    @apply bg-surface border border-border rounded-brand shadow-brand;
+  }
+
+  .nav-link {
+    @apply relative font-semibold text-ink py-1 transition-colors hover:text-brand-dark
+           after:content-[''] after:absolute after:left-0 after:-bottom-0.5 after:h-0.5
+           after:w-0 after:bg-accent after:transition-all after:duration-300
+           hover:after:w-full;
+  }
+  .nav-link.is-active {
+    @apply text-brand after:w-full;
+  }
+
+  .eyebrow {
+    @apply inline-block text-accent font-bold uppercase tracking-wider text-sm mb-3;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold;
+  }
+  .badge-in { @apply badge bg-[#e7f0e3] text-[#4a7a3a]; }
+  .badge-out { @apply badge bg-[#f6e2e2] text-[#b23b3b]; }
+
+  .filter-chip {
+    @apply rounded-full border border-border bg-surface px-4 py-2 font-semibold
+           text-ink transition-all duration-200 hover:border-brand hover:-translate-y-0.5;
+  }
+  .filter-chip.is-active {
+    @apply bg-brand text-surface border-brand;
+  }
+
+  .product-card {
+    @apply card overflow-hidden flex flex-col transition-all duration-300
+           hover:-translate-y-1.5 hover:shadow-brand-lg;
+  }
+
+  .field-input {
+    @apply w-full rounded-2xl border border-border bg-surface px-4 py-3 text-ink
+           font-body transition-shadow duration-200
+           focus:outline-none focus:border-brand focus:ring-4 focus:ring-brand/10;
+  }
+
+  .chat-bubble {
+    @apply rounded-3xl border border-border px-4 py-3 max-w-[calc(100%-60px)];
+  }
+  .chat-bubble-user { @apply chat-bubble bg-brand text-white border-transparent; }
+  .chat-bubble-agent { @apply chat-bubble bg-[#f9f4ef] text-muted; }
+
+  .typing-dot {
+    @apply w-2 h-2 rounded-full bg-muted animate-pulse-dot;
+  }
+}
+
+@layer utilities {
+  .focus-ring:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-accent;
+  }
+}

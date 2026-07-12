@@ -1,0 +1,68 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Menyu — Şirin Anlar{% endblock %}
+
+{% block content %}
+<section class="py-10 md:py-14">
+    <div class="container-brand">
+        <div class="text-center max-w-[640px] mx-auto mb-11 animate-fade-in-up">
+            <span class="eyebrow">Menyu</span>
+            <h2 class="text-[clamp(1.9rem,4vw,2.75rem)] my-2">Bütün şirniyyatlarımız</h2>
+            <p class="text-muted">İstədiyiniz kateqoriyanı seçin və ən sevdiyiniz dadı tapın.</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 animate-fade-in-up [animation-delay:100ms]">
+            <form action="{% url 'shop:menu' %}" method="get" class="flex gap-2 w-full md:max-w-md">
+                <input type="search" name="q" placeholder="Məhsul axtar..." value="{{ query }}" aria-label="Məhsul axtar" class="field-input">
+                {% if active_category %}
+                <input type="hidden" name="kateqoriya" value="{{ active_category.slug }}">
+                {% endif %}
+                <button type="submit" class="btn-primary whitespace-nowrap focus-ring">Axtar</button>
+            </form>
+            {% if query %}
+            <p class="text-muted text-sm">“{{ query }}” üçün {{ result_count }} nəticə tapıldı.</p>
+            {% endif %}
+        </div>
+
+        <div class="flex flex-wrap gap-2.5 mb-10 animate-fade-in-up [animation-delay:180ms]">
+            <a href="{% url 'shop:menu' %}" class="filter-chip {% if not active_category %}is-active{% endif %} focus-ring">Hamısı</a>
+            {% for category in categories %}
+            <a href="?kateqoriya={{ category.slug }}{% if query %}&q={{ query }}{% endif %}"
+               class="filter-chip {% if active_category == category %}is-active{% endif %} focus-ring">{{ category.name }}</a>
+            {% endfor %}
+        </div>
+
+        {% if products %}
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-7">
+            {% for product in products %}
+            <div x-data="{ shown: false }" x-intersect.once="shown = true"
+                 :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+                 style="transition: all .5s cubic-bezier(.16,1,.3,1); transition-delay: {% cycle '0ms' '60ms' '120ms' '180ms' as delays %}">
+                {% include "shop/_product_card.html" with product=product %}
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="flex items-center justify-center gap-5 mt-12" aria-label="Səhifələmə">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if active_category %}&kateqoriya={{ active_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="filter-chip focus-ring">← Əvvəlki</a>
+            {% endif %}
+            <span class="text-muted font-semibold text-sm">Səhifə {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if active_category %}&kateqoriya={{ active_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="filter-chip focus-ring">Növbəti →</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-14 px-6 card border-2 border-dashed text-muted animate-fade-in-up">
+            <div class="inline-flex text-brand" aria-hidden="true">
+                <svg class="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16"/><path d="M5 21v-6a7 7 0 0 1 14 0v6"/><path d="M12 8V5"/><path d="M9 5h6"/></svg>
+            </div>
+            <h3 class="mt-3 mb-1">Hələ məhsul yoxdur</h3>
+            <p>Admin panelinə (<code class="bg-brand-soft px-1.5 py-0.5 rounded">/admin/</code>) daxil olub kateqoriya və məhsul əlavə edin.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

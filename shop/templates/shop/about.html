@@ -1,0 +1,23 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}Haqqımızda — Şirin Anlar{% endblock %}
+
+{% block content %}
+<section class="py-10 md:py-14">
+    <div class="container-brand">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="animate-fade-in-up">
+                <span class="eyebrow">Haqqımızda</span>
+                <h2 class="text-[clamp(1.9rem,4vw,2.5rem)] mb-4">Sevgi ilə bişirilən ev şirniyyatları</h2>
+                <p class="mb-4 text-ink/90">Şirin Anlar kiçik bir mətbəxdə, böyük bir sevgi ilə başladı. Məqsədimiz sadədir — hər ailəyə ev istiliyini xatırladan, təzə və təbii şirniyyatlar təqdim etmək.</p>
+                <p class="mb-4 text-ink/90">Tortlarımızı, pirojnalarımızı və klassik ev şirniyyatlarımızı yalnız keyfiyyətli məhsullardan, əl ilə hazırlayırıq. Hər sifariş bizim üçün xüsusidir.</p>
+                <p class="text-ink/90">İstər doğum günü, istər sadəcə şirin bir an üçün — biz sizin masanıza sevgi gətiririk.</p>
+            </div>
+            <div class="rounded-brand overflow-hidden shadow-brand-lg animate-scale-in [animation-delay:150ms] group">
+                <img src="{% static 'shop/img/hero.png' %}" alt="Şirin Anlar mətbəxi" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

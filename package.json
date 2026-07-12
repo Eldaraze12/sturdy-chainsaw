@@ -1,0 +1,16 @@
+{
+  "name": "sirin_anlar",
+  "version": "1.0.0",
+  "description": "Şirin Anlar — Django əsasında qurulmuş ev şirniyyatları saytının Tailwind CSS build konfiqurasiyası.",
+  "private": true,
+  "scripts": {
+    "build": "tailwindcss -i ./shop/static/shop/css/input.css -o ./shop/static/shop/css/style.css --minify",
+    "watch": "tailwindcss -i ./shop/static/shop/css/input.css -o ./shop/static/shop/css/style.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

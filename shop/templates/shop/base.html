@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Şirin Anlar — Ev şirniyyatları{% endblock %}</title>
+    <meta name="description" content="Şirin Anlar — əl ilə hazırlanan tortlar, pirojnalar və ev şirniyyatları. Hər tikəsi sevgi ilə bişirilir.">
+
+    <meta property="og:title" content="{% block og_title %}Şirin Anlar — Ev şirniyyatları{% endblock %}">
+    <meta property="og:description" content="Əl ilə hazırlanan tortlar, pirojnalar və ev şirniyyatları. Hər tikəsi sevgi ilə bişirilir.">
+    <meta property="og:image" content="{% static 'shop/img/hero.png' %}">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'shop/css/style.css' %}">
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.14.1/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+</head>
+<body class="bg-bg text-ink font-body leading-relaxed">
+    <header
+        x-data="{ scrolled: false, open: false }"
+        x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 8)"
+        :class="scrolled ? 'shadow-[0_8px_24px_-16px_rgba(58,42,32,0.35)]' : ''"
+        class="sticky top-0 z-50 bg-bg/90 backdrop-blur-md border-b border-border transition-shadow duration-300"
+    >
+        <div class="container-brand relative flex items-center justify-between py-4">
+            <a href="{% url 'shop:index' %}" class="flex items-center gap-2 focus-ring group">
+                <span class="inline-flex text-brand transition-transform duration-300 group-hover:rotate-[-8deg]" aria-hidden="true">
+                    <svg class="w-[30px] h-[30px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16"/><path d="M5 21v-7a7 7 0 0 1 14 0v7"/><path d="M5 15c2 0 2 1.2 3.5 1.2S10 15 12 15s2 1.2 3.5 1.2S17 15 19 15"/><path d="M12 7V4"/><circle cx="12" cy="3" r="1"/></svg>
+                </span>
+                <span class="font-display text-2xl font-bold text-brand-dark">Şirin Anlar</span>
+            </a>
+
+            <button
+                @click="open = !open"
+                class="md:hidden flex flex-col gap-[5px] cursor-pointer p-2 focus-ring"
+                aria-label="Menyunu aç"
+            >
+                <span class="w-[26px] h-[3px] bg-brand-dark rounded transition-transform duration-300" :class="open ? 'translate-y-2 rotate-45' : ''"></span>
+                <span class="w-[26px] h-[3px] bg-brand-dark rounded transition-opacity duration-300" :class="open ? 'opacity-0' : ''"></span>
+                <span class="w-[26px] h-[3px] bg-brand-dark rounded transition-transform duration-300" :class="open ? '-translate-y-2 -rotate-45' : ''"></span>
+            </button>
+
+            <nav
+                :class="open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 md:max-h-none md:opacity-100'"
+                @click.outside="open = false"
+                class="flex flex-col md:flex-row absolute md:static top-full left-0 right-0
+                       bg-surface md:bg-transparent border-b md:border-0 border-border shadow-lg md:shadow-none
+                       gap-0 md:gap-7 items-stretch md:items-center overflow-hidden md:overflow-visible
+                       transition-all duration-300 ease-out"
+                aria-label="Əsas naviqasiya"
+            >
+                <a href="{% url 'shop:index' %}" @click="open = false" class="nav-link {% if request.path == '/' %}is-active{% endif %} px-5 md:px-0 py-3 md:py-0 border-t md:border-0 border-border" {% if request.path == '/' %}aria-current="page"{% endif %}>Ana səhifə</a>
+                <a href="{% url 'shop:menu' %}" @click="open = false" class="nav-link {% if request.path == '/menyu/' %}is-active{% endif %} px-5 md:px-0 py-3 md:py-0 border-t md:border-0 border-border" {% if request.path == '/menyu/' %}aria-current="page"{% endif %}>Menyu</a>
+                <a href="{% url 'shop:about' %}" @click="open = false" class="nav-link {% if request.path == '/haqqimizda/' %}is-active{% endif %} px-5 md:px-0 py-3 md:py-0 border-t md:border-0 border-border" {% if request.path == '/haqqimizda/' %}aria-current="page"{% endif %}>Haqqımızda</a>
+                <a href="{% url 'shop:contact' %}" @click="open = false" class="nav-link {% if request.path == '/elaqe/' %}is-active{% endif %} px-5 md:px-0 py-3 md:py-0 border-t md:border-0 border-border" {% if request.path == '/elaqe/' %}aria-current="page"{% endif %}>Əlaqə</a>
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[60] w-[92%] max-w-md space-y-2">
+        {% for message in messages %}
+        <div
+            x-data="{ show: true }"
+            x-init="setTimeout(() => show = false, 4500)"
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 -translate-y-4 scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+            x-transition:leave-end="opacity-0 -translate-y-4 scale-95"
+            class="rounded-2xl px-5 py-3.5 shadow-brand-lg border
+                   {% if message.tags == 'success' %}bg-[#eaf3e9] text-[#3f6343] border-[#c5ddc6]
+                   {% else %}bg-[#fbe4e4] text-[#8d3333] border-[#ebbcbc]{% endif %}"
+        >
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-[#2e2018] text-[#e7d8c9] mt-16 pt-12">
+        <div class="container-brand grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-8 pb-8">
+            <div>
+                <h3 class="font-display text-white mb-3">Şirin Anlar</h3>
+                <p class="text-[#d8c6b6]">Əl ilə hazırlanan ev şirniyyatları. Hər tikəsi ürəklə bişirilir.</p>
+            </div>
+            <div>
+                <h4 class="text-white mb-3 text-[1.05rem] font-display">Səhifələr</h4>
+                <a href="{% url 'shop:index' %}" class="block text-[#d8c6b6] hover:text-white hover:translate-x-1 transition-transform py-0.5">Ana səhifə</a>
+                <a href="{% url 'shop:menu' %}" class="block text-[#d8c6b6] hover:text-white hover:translate-x-1 transition-transform py-0.5">Menyu</a>
+                <a href="{% url 'shop:about' %}" class="block text-[#d8c6b6] hover:text-white hover:translate-x-1 transition-transform py-0.5">Haqqımızda</a>
+                <a href="{% url 'shop:contact' %}" class="block text-[#d8c6b6] hover:text-white hover:translate-x-1 transition-transform py-0.5">Əlaqə</a>
+            </div>
+            <div>
+                <h4 class="text-white mb-3 text-[1.05rem] font-display">Əlaqə</h4>
+                <p class="text-[#d8c6b6] py-0.5">Bakı, Azərbaycan</p>
+                <p class="text-[#d8c6b6] py-0.5">+994 00 000 00 00</p>
+                <p class="text-[#d8c6b6] py-0.5">salam@sirinanlar.az</p>
+            </div>
+        </div>
+        <div class="container-brand border-t border-white/10 pt-5 pb-6 text-sm text-[#b8a595]">
+            <p>© {% now "Y" %} Şirin Anlar. Bütün hüquqlar qorunur.</p>
+        </div>
+    </footer>
+
+    <div
+        x-data="{ show: false }"
+        x-init="window.addEventListener('scroll', () => show = window.scrollY > 500)"
+        x-show="show"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-75"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-75"
+        class="fixed bottom-6 right-6 z-50"
+    >
+        <button
+            @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+            class="flex items-center justify-center w-12 h-12 rounded-full bg-brand text-white shadow-brand-lg
+                   hover:bg-brand-dark hover:-translate-y-1 transition-all duration-200 focus-ring"
+            aria-label="Yuxarı qayıt"
+        >
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+        </button>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
