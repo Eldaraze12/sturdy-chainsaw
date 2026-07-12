@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Bağımlılıkları yükle
-pip install -r requirements.txt
+# 1. Python paket yükleyicisini güncelle ve bağımlılıkları yükle
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
 
-# Statik dosyaları 'staticfiles' klasörüne topla
-python manage.py collectstatic --noinput
+# 2. Statik dosyaları topla
+python3 manage.py collectstatic --noinput
