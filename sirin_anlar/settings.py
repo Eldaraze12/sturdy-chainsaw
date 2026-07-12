@@ -1,6 +1,7 @@
 import os
 import shutil
 from pathlib import Path
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -60,25 +61,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "sirin_anlar.wsgi.application"
 
-# Vercel mühiti üçün SQLite faylının idarə edilməsi və məcburi köçürülməsi
-if os.environ.get("VERCEL"):
-    db_path = "/tmp/db.sqlite3"
-    source_db = BASE_DIR / "db.sqlite3"
-    
-    # Əgər əsas qovluqda db.sqlite3 faylı varsa və /tmp qovluğuna hələ köçürülməyibsə
-    if os.path.exists(source_db) and not os.path.exists(db_path):
-        try:
-            shutil.copyfile(source_db, db_path)
-        except Exception:
-            pass
-else:
-    db_path = BASE_DIR / "db.sqlite3"
-
+# Vercel-də olanda Neon PostgreSQL-ə, local kompüterinizdə isə SQLite-a qoşulur
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": db_path,
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=True if os.environ.get("VERCEL") else False
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
